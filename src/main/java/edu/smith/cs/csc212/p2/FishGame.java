@@ -43,6 +43,11 @@ public class FishGame {
 	 */
 	int score;
 	
+	/** 
+	 * Making variable for number of rocks. 
+	 */
+	public static final int numRocks = 10;
+	
 	/**
 	 * Create a FishGame of a particular size.
 	 * @param w how wide is the grid?
@@ -58,12 +63,14 @@ public class FishGame {
 		home = world.insertFishHome();
 		
 		// TODO(lab) Generate some more rocks!
-		// TODO(lab) Make 5 into a constant, so it's easier to find & change. ok.
-		for (int i=0; i<5; i++) {
+		// TODO(lab) Make 5 into a constant, so it's easier to find & change.
+		for (int i=0; i<numRocks; i++) {
 			world.insertRockRandomly();
 		}
 		
-		// TODO(lab) Make the snail!
+		// TODO(lab) Make the snail! Inserting 2 snails.
+		world.insertSnailRandomly();
+		world.insertSnailRandomly();
 		
 		// Make the player out of the 0th fish color.
 		player = new Fish(0, world);
@@ -118,7 +125,10 @@ public class FishGame {
 				
 				// Remove from world.
 				// TODO(lab): add to found instead! (So we see objectsFollow work!)
-				world.remove(wo);
+				//world.remove(wo);
+				wo.isFish();
+				found.add((Fish) wo);
+		
 				
 				// Increase score when you find a fish!
 				score += 10;
