@@ -141,7 +141,8 @@ public class FishGame {
 		for (Fish lost : missing) {
 			// 30% of the time, lost fish move randomly.
 			if (rand.nextDouble() < 0.3) {
-				// TODO(lab): What goes here?
+				// TODO(lab): What goes here? lost fish should move randomly.
+				lost.moveRandomly();
 			}
 		}
 	}
