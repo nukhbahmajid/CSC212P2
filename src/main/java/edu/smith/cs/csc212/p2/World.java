@@ -177,6 +177,16 @@ public class World {
 		return snail;
 	}
 	
+	/** 
+	 * Insert falling rocks at random into the world. 
+	 * @return the falling rocks! 
+	 */
+	public FallingRock insertFallingRockRandomly() {
+		FallingRock fallingRock = new FallingRock(this);
+		insertRandomly(fallingRock);
+		return fallingRock;
+	}
+	
 	/**
 	 * Determine if a WorldObject can swim to a particular point.
 	 * 
@@ -227,14 +237,37 @@ public class World {
 	 */
 	public static void objectsFollow(WorldObject target, List<? extends WorldObject> followers) {
 		// TODO(P2) Comment this method!
-		// What is recentPositions?
-		// What is followers?
-		// What is target?
-		// Why is past = putWhere[i+1]? Why not putWhere[i]?
+		/* What is recentPositions?
+		 *  
+		 * Answer: recentPositions is the deque (list) of positions that the leader (target) 
+		 * has been through. This gets updated mod 64 (size of the grid) and the "old" ones are excluded. By having 
+		 * a deque, it becomes possible for the "followers" to be added to positions that the leader has just recently
+		 * been moving through - creating a following effect.*/
+		
+		
+		/* What is followers? 
+		 * 
+		 * 
+		 * Answer: an extended WorldObjects list. The program goes into the step() function of the 
+		 * FishGame (because the objectsFollow is passed in FishGame with the extended list specified to be found world objects),
+		 *  and decides that if there's another WorldObject in the same spot as the "player", remove them, see if the world object
+		 *  was in missing: if it was, add to found instead. Because we cast these world objects as Fish objects, they are always 
+		 *  fish*/
+		
+		/* What is target?
+		 * Answer: The only place the objects Follow is passed is in the FishGame, and the target is the player always. */
+		
+		
+		/* Why is past = putWhere[i+1]? Why not putWhere[i]?
+		 * Answer: Because the index of lists always starts with 0, and keeping in mind that the list recentPositions is a deque,
+		 * the most recent positions of the target get added to the front. In fact the 0 position is target itself. We want that 
+		 * for each world object in followers add them right next to the target rather on the target itself and forward.*/
+		
 		List<IntPoint> putWhere = new ArrayList<>(target.recentPositions);
 		for (int i=0; i<followers.size(); i++) {
 			IntPoint past = putWhere.get(i+1);
 			followers.get(i).setPosition(past.x, past.y);
+//			System.out.println(target.isPlayer());
 		}
 	}
 }

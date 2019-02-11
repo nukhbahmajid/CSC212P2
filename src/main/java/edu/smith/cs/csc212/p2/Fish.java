@@ -38,6 +38,11 @@ public class Fish extends WorldObject {
 	boolean player = false;
 	
 	/**
+	 * the fastScared fish attribute
+	 */
+	boolean fastScared; 
+	
+	/**
 	 * Called only on the Fish that is the player!
 	 */
 	public void markAsPlayer() {
@@ -53,6 +58,7 @@ public class Fish extends WorldObject {
 	public Fish(int color, World world) {
 		super(world);
 		this.color = color;
+		this.fastScared = false;
 	}
 	
 	/**

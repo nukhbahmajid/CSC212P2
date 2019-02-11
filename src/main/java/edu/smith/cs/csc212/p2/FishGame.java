@@ -1,5 +1,6 @@
 package edu.smith.cs.csc212.p2;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -43,10 +44,12 @@ public class FishGame {
 	 */
 	int score;
 	
+	
 	/** 
-	 * Making variable for number of rocks. 
+	 * Making variable for number of rocks (and falling rocks). 
 	 */
 	public static final int numRocks = 10;
+	public static final int numFallingRocks = 10; 
 	
 	/**
 	 * Create a FishGame of a particular size.
@@ -62,13 +65,18 @@ public class FishGame {
 		// Add a home!
 		home = world.insertFishHome();
 		
-		// TODO(lab) Generate some more rocks!
-		// TODO(lab) Make 5 into a constant, so it's easier to find & change.
+		// TODO(lab) Generate some more rocks! (done)
+		// TODO(lab) Make 5 into a constant, so it's easier to find & change. (done) 
 		for (int i=0; i<numRocks; i++) {
 			world.insertRockRandomly();
 		}
 		
-		// TODO(lab) Make the snail! Inserting 2 snails.
+		// insert falling rocks 
+		for (int i = 0; i<numFallingRocks; i++) {
+			world.insertFallingRockRandomly();
+		}
+		
+		// TODO(lab) Make the snail! (Done: Inserting 2 snails.)
 		world.insertSnailRandomly();
 		world.insertSnailRandomly();
 		
@@ -103,6 +111,40 @@ public class FishGame {
 		// TODO(P2) We want to bring the fish home before we win!
 		return missing.isEmpty();
 	}
+	
+	public int scoreDecider(Fish wo) {
+		if (wo.getColor() == Color.green) {
+			return 20; 
+		}
+		
+		else if (wo.getColor() == Color.yellow) {
+			return 30; 
+		}
+		
+		else if (wo.getColor() == Color.cyan) {
+			return 40;
+		}
+		
+		else if (wo.getColor() == Color.magenta) {
+			return 50;
+		}
+		
+		else if (wo.getColor() == Color.orange) {
+			return 60;
+		}
+		
+		else if (wo.getColor() == Color.pink) {
+			return 70;
+		}
+		
+		else if (wo.getColor() == Color.white) {
+			return 80; 
+		}
+		
+		else {
+			return 10;
+		}
+	}
 
 	/**
 	 * Update positions of everything (the user has just pressed a button).
@@ -124,14 +166,16 @@ public class FishGame {
 				missing.remove(wo);
 				
 				// Remove from world.
-				// TODO(lab): add to found instead! (So we see objectsFollow work!)
+				// TODO(lab): add to found instead! (So we see objectsFollow work!) (done)
 				//world.remove(wo);
-				wo.isFish();
+//				wo.isFish();
 				found.add((Fish) wo);
 		
 				
 				// Increase score when you find a fish!
-				score += 10;
+				//score += 10; 
+				score += scoreDecider((Fish) wo);  
+				
 			}
 		}
 		
@@ -149,10 +193,18 @@ public class FishGame {
 	private void wanderMissingFish() {
 		Random rand = ThreadLocalRandom.current();
 		for (Fish lost : missing) {
+			//for some random probability (i.e. 0.5 in this case) lost fish are fastScared
+			if (rand.nextDouble() < 0.5) {
+				lost.fastScared = true;
+			}
+			// 2nd bullet point, maybe??
+			if (rand.nextDouble() < 0.8 && lost.fastScared) {
+				lost.moveRandomly();
+			}
 			// 30% of the time, lost fish move randomly.
 			if (rand.nextDouble() < 0.3) {
-				// TODO(lab): What goes here? lost fish should move randomly.
-				lost.moveRandomly();
+				// TODO(lab): What goes here? lost fish should move randomly. (done)
+				lost.moveRandomly(); // here, below add .fastScared() 
 			}
 		}
 	}
@@ -166,7 +218,13 @@ public class FishGame {
 		// TODO(P2) use this print to debug your World.canSwim changes!
 		System.out.println("Clicked on: "+x+","+y+ " world.canSwim(player,...)="+world.canSwim(player, x, y));
 		List<WorldObject> atPoint = world.find(x, y);
-		// TODO(P2) allow the user to click and remove rocks.
+		// TODO(P2) allow the user to click and remove rocks. (done)
+		for (WorldObject aRock : atPoint) {
+			if (!aRock.isFish() && !aRock.isPlayer() && !aRock.isSnail() && !aRock.isFishHome()) {
+				//System.out.println("this is a rock");
+				world.remove(aRock);
+			}
+		}
 
 	}
 	

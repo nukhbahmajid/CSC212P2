@@ -129,6 +129,15 @@ public abstract class WorldObject {
 	public boolean isPlayer() {
 		return isFish() && ((Fish) this).player;
 	}
+	
+	// check if snail also? -Nukhbah 
+	public boolean isSnail() {
+		return this instanceof Snail;
+	}
+	// check if FishHome also? - Nukhbah 
+	public boolean isFishHome() {
+		return this instanceof FishHome;
+	}
 
 	/**
 	 * Move this object down if possible.
