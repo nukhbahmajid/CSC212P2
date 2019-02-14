@@ -188,6 +188,27 @@ public class World {
 	}
 	
 	/**
+	 * Insert food randomly into the world. 
+	 * @return the food!
+	 */
+	public FishFood insertFishFoodRandomly() {
+		FishFood food = new FishFood(this);
+		insertRandomly(food);
+		return food;
+	}
+	
+	/**
+	 * Insert bubble randomly into the world. 
+	 * @return the bubble!
+	 */
+	public Bubble insertBubbleRandomly() {
+		Bubble bubble = new Bubble(this);
+		insertRandomly(bubble);
+		return bubble;
+	}
+	
+	
+	/**
 	 * Determine if a WorldObject can swim to a particular point.
 	 * 
 	 * @param whoIsAsking - the object (not just the player!)

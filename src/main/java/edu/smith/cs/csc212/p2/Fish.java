@@ -37,16 +37,29 @@ public class Fish extends WorldObject {
 	 */
 	boolean player = false;
 	
+	
 	/**
 	 * the fastScared fish attribute
 	 */
-	boolean fastScared; 
+	boolean fastScared;
+	
+	
+	/**
+	 * the counter for the steps taken by fish after being found so they could get bored later
+	 */ 
+	public int stepCounter;
+	
+	/**
+	 * the fish has a bubble state
+	 */
+	boolean bubbleState;
 	
 	/**
 	 * Called only on the Fish that is the player!
 	 */
 	public void markAsPlayer() {
 		this.player = true;
+		this.bubbleState = true;
 	}
 
 
@@ -54,11 +67,15 @@ public class Fish extends WorldObject {
 	 * A Fish knows what World it belongs to, because all WorldObjects do.
 	 * @param color Color by number.
 	 * @param world The world itself.
+	 * @param stepCounter 
 	 */
 	public Fish(int color, World world) {
 		super(world);
 		this.color = color;
 		this.fastScared = rand.nextBoolean();
+		this.stepCounter = 0;
+		this.bubbleState = false;
+		
 	}
 	
 	/**
@@ -98,7 +115,8 @@ public class Fish extends WorldObject {
 			flipped.scale(-1, 1);
 		}
 		
-		if (this.player) {
+		//make a bubble around player and fish that are in bubble state
+		if (this.bubbleState) {
 			flipped.setColor(new Color(1f,1f,1f,0.5f));
 			flipped.fill(circle);
 		}

@@ -51,6 +51,10 @@ public class FishGame {
 	 */
 	int score;
 	
+	FishFood food;
+	Bubble bubble;
+	
+	
 	
 	/** 
 	 * Making variable for number of rocks (and falling rocks). 
@@ -87,6 +91,14 @@ public class FishGame {
 		// TODO(lab) Make the snail! (Done: Inserting 2 snails.)
 		world.insertSnailRandomly();
 		world.insertSnailRandomly();
+		
+		//insert food in the world (position changed in step().)
+		food = world.insertFishFoodRandomly();
+		
+		//insert a bubble in the world randomly.
+		bubble = world.insertBubbleRandomly();
+		
+	
 		
 		// Make the player out of the 0th fish color.
 		player = new Fish(0, world);
@@ -156,10 +168,11 @@ public class FishGame {
 
 	/**
 	 * Update positions of everything (the user has just pressed a button).
+	 * @throws InterruptedException 
 	 */
 	public void step() {
 		// Keep track of how long the game has run.
-		this.stepsTaken += 1;
+		this.stepsTaken += 1; //below increment steps the fish has taken too.
 				
 		// These are all the objects in the world in the same cell as the player.
 		List<WorldObject> overlap = this.player.findSameCell();
@@ -177,34 +190,94 @@ public class FishGame {
 				// TODO(lab): add to found instead! (So we see objectsFollow work!) (done)
 				
 				//world.remove(wo);
-//				wo.isFish();
 				found.add((Fish) wo);
+				
+			//if the wo is another fish and they're in a bubble state, make the bubble pop!
+			if (wo.isFish()) {
+				Fish otherFish = (Fish) wo;
+				if (otherFish.bubbleState) {
+					otherFish.bubbleState = false;
+				}
+			}
 		
 				
-				// Increase score when you find a fish!
+				// Increase score when you find a fish! (instead: increase score when you guide them home)
 				//score += 10; 
-				score += scoreDecider((Fish) wo);	
+				//score += scoreDecider((Fish) wo);	
 			}
-			
 			//making fish go home. remove from the world.
 			if (wo.isFishHome() && found.size() > 0) {
-				//boolean playerAtHome = wo.inSameSpot(this.home);
-				//System.out.println("Yes it is " + playerAtHome + " that player is in the same spot as home.");
-				
 				for (int i = found.size() - 1; i >= 0; i--) {
 					fishAtHome.add(found.get(i));
+					score += scoreDecider(found.get(i));
 					found.remove(i);
 				}
 				for (Fish item : fishAtHome) {
 					world.remove(item);
-					System.out.println("the missing list still contains: " + missing.size() +" fish");
+				}	
+			}
+		}
+		//if too many steps taken and there are still fish following the player, make them missing again (do we decrease score?)
+		for (int i = found.size() -1; i >= 0; i--) {
+			found.get(i).stepCounter += 1;
+			if (found.get(i).stepCounter > 20) {
+				Fish fishToWander = found.get(i);
+				missing.add(fishToWander);
+				fishToWander.stepCounter = 0;
+				found.remove(i);
+				
+			}
+		}	
+			
+		//make fish go home if they randomly wander on top of home
+		List<WorldObject> woCopy = world.viewItems(); 
+		for (int i = woCopy.size() - 1; i >= 0; i--) {
+			WorldObject checkWO = woCopy.get(i);
+			if (checkWO instanceof Fish && !(checkWO.isPlayer())) {
+				if (checkWO.inSameSpot(this.home)) {
+					fishAtHome.add((Fish) checkWO);
+					if (missing.contains(checkWO)) {
+						missing.remove(checkWO);
+					}
+					world.remove(checkWO);
 				}
 			}
 			
-			
+			// fish food eaten by player or other fish 
+			//(no waiting involved because it keeps giving me an "illegalmonitorstateexception")
+			if (checkWO instanceof Fish) {
+				if (checkWO.inSameSpot(this.food) && checkWO.isPlayer()) {
+					this.score += 10;
+					this.food.setPosition(world.pickUnusedSpace());
+ 
+				}
+				if (checkWO.inSameSpot(this.food)) {
+					this.food.setPosition(world.pickUnusedSpace());
+					
+				}
+				//check if other fish are in place of the bubble. remove bubble and then make fish in bubbleState. 
+				if(checkWO.inSameSpot(this.bubble) && !(checkWO.isPlayer()) && this.bubble.bubbleExists) {
+					((Fish) checkWO).bubbleState = true;
+					this.bubble.bubbleExists = false;
+					world.remove(this.bubble);
+					
+				}
+			}
 			
 		}
+		// if all bubbles in world popped and there are no bubbles, create bubbles:
 		
+		// NOTE for JJ: for some reason the code below doesn't make a new instance of the bubble
+		// instead it makes the fish never enter the bubble state. i am not quite sure what's going on 
+		
+//		if (this.bubble.bubbleExists = false) {
+//			Bubble newBubble = world.insertBubbleRandomly();
+//			this.bubble = newBubble;
+//			this.bubble.bubbleExists = true;
+//				}
+		
+			
+			
 		
 		
 		// Make sure missing fish *do* something.
@@ -221,11 +294,7 @@ public class FishGame {
 	private void wanderMissingFish() {
 		Random rand = ThreadLocalRandom.current();
 		for (Fish lost : missing) {
-//			//for some random probability (i.e. 0.5 in this case) lost fish are fastScared
-//			if (rand.nextDouble() < 0.5) {
-//				lost.fastScared = true;
-//			}  made the fish randomly fish.fastScared in the Fish class constructor
-			// 2nd bullet point, maybe??
+
 			if (rand.nextDouble() < 0.8 && lost.fastScared) {
 				lost.moveRandomly();
 			}
@@ -236,6 +305,7 @@ public class FishGame {
 			}
 		}
 	}
+	
 
 	/**
 	 * This gets a click on the grid. We want it to destroy rocks that ruin the game.
@@ -246,11 +316,13 @@ public class FishGame {
 		// TODO(P2) use this print to debug your World.canSwim changes! (done?)
 		System.out.println("Clicked on: "+x+","+y+ " world.canSwim(player,...)="+world.canSwim(player, x, y));
 		List<WorldObject> atPoint = world.find(x, y);
-		// TODO(P2) allow the user to click and remove rocks. (done)
-		for (WorldObject aRock : atPoint) {
-			if (!aRock.isFish() && !aRock.isPlayer() && !aRock.isSnail() && !aRock.isFishHome()) {
+		// TODO(P2) allow the user to click and remove rocks/and bubbles. (done)
+		for (WorldObject aRockOrBubble : atPoint) {
+			if (!aRockOrBubble.isFish() && !aRockOrBubble.isPlayer() && 
+				!aRockOrBubble.isSnail() && !aRockOrBubble.isFishHome() && 
+				!aRockOrBubble.isFishFood()) {
 				//System.out.println("this is a rock");
-				world.remove(aRock);
+				world.remove(aRockOrBubble);
 			}
 		}
 

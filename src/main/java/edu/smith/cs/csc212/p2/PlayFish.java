@@ -122,11 +122,13 @@ public class PlayFish extends GFX {
 			// Draw it with a 1x1 graphical world, with the center right in the middle of the tile.
 			// I fiddled with this translate to get pixel-perfect. Maybe there's a nicer way, but it works for now.
 
+			
 			Graphics2D forWo = (Graphics2D) g.create();
 			forWo.translate((int) ((wo.getX() + 0.5) * tw) + 1, (int) ((wo.getY() + 0.5) * th) + 1);
 			forWo.scale(tw, th);
 			wo.draw(forWo);
 			forWo.dispose();
+			
 		}
 		
 		IntPoint hover = mouseToGame(this.getMouseLocation());
@@ -202,7 +204,9 @@ public class PlayFish extends GFX {
 				this.game.click(click.x, click.y);
 			}
 			// Update game logic!
+
 			this.game.step();
+			
 			// Update message at the top!
 		}
 	}

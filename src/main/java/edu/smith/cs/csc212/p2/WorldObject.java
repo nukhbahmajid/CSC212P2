@@ -138,6 +138,11 @@ public abstract class WorldObject {
 	public boolean isFishHome() {
 		return this instanceof FishHome;
 	}
+	
+	//check if this is fish food
+	public boolean isFishFood() {
+		return this instanceof FishFood; 
+	}
 
 	/**
 	 * Move this object down if possible.
