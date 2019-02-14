@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+import com.sun.tools.javac.jvm.Items;
+
 /**
  * This class manages our model of gameplay: missing and found fish, etc.
  * @author jfoley
@@ -34,6 +36,11 @@ public class FishGame {
 	 */
 	List<Fish> found;
 	
+	/** 
+	 * These are the fish that are now at home. 
+	 */
+	List<Fish> fishAtHome;
+	
 	/**
 	 * Number of steps!
 	 */
@@ -61,6 +68,7 @@ public class FishGame {
 		
 		missing = new ArrayList<Fish>();
 		found = new ArrayList<Fish>();
+		fishAtHome = new ArrayList<Fish>();
 		
 		// Add a home!
 		home = world.insertFishHome();
@@ -109,7 +117,7 @@ public class FishGame {
 	 */
 	public boolean gameOver() {
 		// TODO(P2) We want to bring the fish home before we win!
-		return missing.isEmpty();
+		return missing.isEmpty() && fishAtHome.size() >= 7;
 	}
 	
 	public int scoreDecider(Fish wo) {
@@ -167,6 +175,7 @@ public class FishGame {
 				
 				// Remove from world.
 				// TODO(lab): add to found instead! (So we see objectsFollow work!) (done)
+				
 				//world.remove(wo);
 //				wo.isFish();
 				found.add((Fish) wo);
@@ -174,10 +183,29 @@ public class FishGame {
 				
 				// Increase score when you find a fish!
 				//score += 10; 
-				score += scoreDecider((Fish) wo);  
-				
+				score += scoreDecider((Fish) wo);	
 			}
+			
+			//making fish go home. remove from the world.
+			if (wo.isFishHome() && found.size() > 0) {
+				//boolean playerAtHome = wo.inSameSpot(this.home);
+				//System.out.println("Yes it is " + playerAtHome + " that player is in the same spot as home.");
+				
+				for (int i = found.size() - 1; i >= 0; i--) {
+					fishAtHome.add(found.get(i));
+					found.remove(i);
+				}
+				for (Fish item : fishAtHome) {
+					world.remove(item);
+					System.out.println("the missing list still contains: " + missing.size() +" fish");
+				}
+			}
+			
+			
+			
 		}
+		
+		
 		
 		// Make sure missing fish *do* something.
 		wanderMissingFish();
@@ -193,10 +221,10 @@ public class FishGame {
 	private void wanderMissingFish() {
 		Random rand = ThreadLocalRandom.current();
 		for (Fish lost : missing) {
-			//for some random probability (i.e. 0.5 in this case) lost fish are fastScared
-			if (rand.nextDouble() < 0.5) {
-				lost.fastScared = true;
-			}
+//			//for some random probability (i.e. 0.5 in this case) lost fish are fastScared
+//			if (rand.nextDouble() < 0.5) {
+//				lost.fastScared = true;
+//			}  made the fish randomly fish.fastScared in the Fish class constructor
 			// 2nd bullet point, maybe??
 			if (rand.nextDouble() < 0.8 && lost.fastScared) {
 				lost.moveRandomly();
@@ -215,7 +243,7 @@ public class FishGame {
 	 * @param y - the y-tile.
 	 */
 	public void click(int x, int y) {
-		// TODO(P2) use this print to debug your World.canSwim changes!
+		// TODO(P2) use this print to debug your World.canSwim changes! (done?)
 		System.out.println("Clicked on: "+x+","+y+ " world.canSwim(player,...)="+world.canSwim(player, x, y));
 		List<WorldObject> atPoint = world.find(x, y);
 		// TODO(P2) allow the user to click and remove rocks. (done)

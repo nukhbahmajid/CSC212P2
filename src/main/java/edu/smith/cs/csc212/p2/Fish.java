@@ -58,7 +58,7 @@ public class Fish extends WorldObject {
 	public Fish(int color, World world) {
 		super(world);
 		this.color = color;
-		this.fastScared = false;
+		this.fastScared = rand.nextBoolean();
 	}
 	
 	/**

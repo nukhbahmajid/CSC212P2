@@ -207,12 +207,20 @@ public class World {
 		List<WorldObject> inSpot = this.find(x, y);
 		
 		for (WorldObject it : inSpot) {
-			// TODO(P2): Don't let us move over rocks as a Fish.
+			// TODO(P2): Don't let us move over rocks as a Fish. (Done).
 			// The other fish shouldn't step "on" the player, the player should step on the other fish.
 			if (it instanceof Snail) {
 				// This if-statement doesn't let anyone step on the Snail.
 				// The Snail(s) are not gonna take it.
 				return false;
+			}
+			
+			if (it instanceof Rock || it instanceof FallingRock) {
+				return false; 
+			}
+			
+			if (it instanceof Fish && !(isPlayer)) {
+				return false; 
 			}
 		}
 		
@@ -236,7 +244,7 @@ public class World {
 	 * @param followers a set of objects to follow the leader.
 	 */
 	public static void objectsFollow(WorldObject target, List<? extends WorldObject> followers) {
-		// TODO(P2) Comment this method!
+		// TODO(P2) Comment this method! (done)
 		/* What is recentPositions?
 		 *  
 		 * Answer: recentPositions is the deque (list) of positions that the leader (target) 
