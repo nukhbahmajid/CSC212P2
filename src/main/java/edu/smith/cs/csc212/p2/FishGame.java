@@ -51,6 +51,7 @@ public class FishGame {
 	 */
 	int score;
 	
+	//for making instances of food and bubble associated to the fish game
 	FishFood food;
 	Bubble bubble;
 	
@@ -200,12 +201,8 @@ public class FishGame {
 				}
 			}
 		
-				
-				// Increase score when you find a fish! (instead: increase score when you guide them home)
-				//score += 10; 
-				//score += scoreDecider((Fish) wo);	
 			}
-			//making fish go home. remove from the world.
+			//making fish go home. remove from the world. then increase score. 
 			if (wo.isFishHome() && found.size() > 0) {
 				for (int i = found.size() - 1; i >= 0; i--) {
 					fishAtHome.add(found.get(i));
