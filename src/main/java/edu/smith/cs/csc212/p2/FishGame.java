@@ -324,6 +324,13 @@ public class FishGame {
 				//System.out.println("this is a rock");
 				world.remove(aRockOrBubble);
 			}
+			// make bubble state fish pop the bubbles by clicking. 
+			if (aRockOrBubble.isFish()) {
+				Fish fishInBubble = (Fish) aRockOrBubble;
+				if (fishInBubble.bubbleState) {
+					fishInBubble.bubbleState = false;
+				}
+			}
 		}
 
 	}
